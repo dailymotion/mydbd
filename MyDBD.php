@@ -225,7 +225,7 @@ class MyDBD
     {
         if ($this->transactionInProgress)
         {
-            error_log('A transaction have been left uncommited, rolling it back...');
+            error_log('A transaction has been left uncommited, rolling it back...');
             $this->rollback();
         }
     }
@@ -617,7 +617,7 @@ class MyDBD
      * query, use MyDBD_ResultSet::count() instead.
      *
      * Note: for backward compatibility, this method will return the affected rows from the last
-     * executed statment if no query have been executed since the last call to the prepare() method.
+     * executed statment if no query has been executed since the last call to the prepare() method.
      * ie: If you call query(), prepare() then execute(), this method won't give the number of affected
      * rows done by the query() call but the one done by the execute() call.
      *
@@ -665,7 +665,7 @@ class MyDBD
     /**
      * Set extended info for the connection. The info will be retain for all future queries on this
      * connection. Example of connection level extended info is URI => /current/uri to help DBAs
-     * to figure out from where the query have been generated.
+     * to figure out from where the query has been generated.
      *
      *
      * @param string $key   The label of the info.
