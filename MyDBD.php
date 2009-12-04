@@ -357,9 +357,10 @@ class MyDBD
         }
         else
         {
-            $result = $this->link()->query($query);
+            $link = $this->link();
+            $result = $link->query($query);
             $this->handleErrors($query);
-            $this->lastQueryHandle = $this->link(); // used by getAffectedRows()
+            $this->lastQueryHandle = $link; // used by getAffectedRows()
 
             if ($result instanceof mysqli_result)
             {
