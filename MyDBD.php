@@ -168,6 +168,7 @@ class MyDBD
      *                        connection before closing it. This timeout applies only to TCP/IP and
      *                        Unix socket file connections, not to connections made via named pipes,
      *                        or shared memory. (int)
+     * - enable_pinba         Activate Pinba (http://pinba.org) support. (bool)
      *
      * @see MyDBD_Logger     for more info en query_log mode.
      *
@@ -205,6 +206,7 @@ class MyDBD
                 'ignore_space'          => false,
                 'readonly'              => false,
                 'query_log'             => false,
+                'enable_pinba'          => false,
                 'query_prepare_cache'   => false,
                 'connect_timeout'       => 0,
                 'wait_timeout'          => 0,
@@ -349,6 +351,7 @@ class MyDBD
         }
 
         if ($this->options['query_log']) $start = microtime(true);
+        if ($this->options['enable_pinba']) $pinbaTimer = pinba_timer_start(array('group' => 'db', 'method' => 'query'));
 
         if (count($params) > 0)
         {
@@ -359,6 +362,7 @@ class MyDBD
         {
             $link = $this->link();
             $result = $link->query($query);
+            if ($this->options['enable_pinba']) $timer = pinba_timer_stop($pinbaTimer);
             $this->handleErrors($query);
             $this->lastQueryHandle = $link; // used by getAffectedRows()
 

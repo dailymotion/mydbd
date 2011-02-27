@@ -101,10 +101,12 @@ class MyDBD_PreparedStatement
         }
 
         if ($this->options['query_log']) $start = microtime(true);
+        if ($this->options['enable_pinba']) $pinbaTimer = pinba_timer_start(array('group' => 'db', 'method' => 'prepare'));
 
         if ($this->stmt->prepare($query))
         {
             if ($this->options['query_log']) MyDBD_Logger::log('prepare', $query, null, microtime(true) - $start);
+            if ($this->options['enable_pinba']) $timer = pinba_timer_stop($pinbaTimer);
             $this->preparedQuery = $query;
 
             if (count($args) > 0)
@@ -129,6 +131,7 @@ class MyDBD_PreparedStatement
         }
         else
         {
+            if ($this->options['enable_pinba']) $timer = pinba_timer_stop($pinbaTimer);
             $this->handleErrors($query);
 
             // if handle errors doesn't throw an exception, do it by ourself
@@ -170,10 +173,8 @@ class MyDBD_PreparedStatement
             throw new SQLNotPreparedStatementException('Cannot execute a not prepared statement.');
         }
 
-        if ($queryLog = $this->options['query_log'])
-        {
-            $start = microtime(true);
-        }
+        if ($this->options['query_log']) $start = microtime(true);
+        if ($this->options['enable_pinba']) $pinbaTimer = pinba_timer_start(array('group' => 'db', 'method' => 'execute'));
 
         if ($this->stmt->param_count > 0)
         {
@@ -190,12 +191,11 @@ class MyDBD_PreparedStatement
 
         $this->stmt->execute();
         $this->stmt->store_result();
+        if ($this->options['enable_pinba']) $timer = pinba_timer_stop($pinbaTimer);
         $this->handleErrors($this->preparedQuery, $params);
 
-        if ($queryLog)
-        {
-            MyDBD_Logger::log('execute', $this->preparedQuery, (isset($params) ? $params : null), microtime(true) - $start);
-        }
+        if ($this->options['query_log']) MyDBD_Logger::log('execute', $this->preparedQuery, (isset($params) ? $params : null), microtime(true) - $start);
+
 
         if ($metadata = $this->stmt->result_metadata())
         {
