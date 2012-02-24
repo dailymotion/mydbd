@@ -302,7 +302,7 @@ class MyDBD
     {
         if ($this->link->errno)
         {
-            MyDBD_Error::throwError($this->link->errno, $this->link->error, $this->link->sqlstate, $query);
+            MyDBD_Error::throwError($this->link->errno, $this->link->error . ' /*@' . $this->link->host_info . '*/', $this->link->sqlstate, $query);
         }
     }
 
@@ -415,7 +415,14 @@ class MyDBD
         $this->handleErrors();
 
         $sth = new MyDBD_PreparedStatement($stmt, $this->options);
-        $sth->prepare($query, $args);
+        try
+        {
+            $sth->prepare($query, $args);
+        }
+        catch (SQLException $e)
+        {
+            throw new Exception($e->getMessage() . ' /*@' . $this->link->host_info . '*/', $e->getCode(), $e);
+        }
 
         return $sth;
     }
@@ -887,14 +894,22 @@ class MyDBD
 
     public function execute(MyDBD_PreparedStatement $statement, $params = null)
     {
-        if (isset($params))
+        try
         {
-            return $statement->execute($params);
+            if (isset($params))
+            {
+                $res = $statement->execute($params);
+            }
+            else
+            {
+                $res = $statement->execute();
+            }
         }
-        else
+        catch (SQLException $e)
         {
-            return $statement->execute();
+            throw new Exception($e->getMessage() . ' /*@' . $this->link->host_info . '*/', $e->getCode(), $e);
         }
+        return $res;
     }
 
     public function getCol($query, $col = 0, $params = array())
