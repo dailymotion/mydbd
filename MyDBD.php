@@ -298,11 +298,16 @@ class MyDBD
         return $this->link;
     }
 
+    protected function dbName ()
+    {
+        return sprintf("%s@%s", $this->connectionInfo['database'], $this->connectionInfo['hostname']);
+    }
+
     protected function handleErrors($query = null)
     {
         if ($this->link->errno)
         {
-            MyDBD_Error::throwError($this->link->errno, $this->link->error . ' /*@' . $this->link->host_info . '*/', $this->link->sqlstate, $query);
+            MyDBD_Error::throwError($this->link->errno, $this->link->error . ' /* ' . $this->dbName() . ' */', $this->link->sqlstate, $query);
         }
     }
 
@@ -421,7 +426,8 @@ class MyDBD
         }
         catch (SQLException $e)
         {
-            throw new Exception($e->getMessage() . ' /*@' . $this->link->host_info . '*/', $e->getCode(), $e);
+            $e->appendMessage('/* ' . $this->dbName() . ' */');
+            throw $e;
         }
 
         return $sth;
@@ -907,7 +913,8 @@ class MyDBD
         }
         catch (SQLException $e)
         {
-            throw new Exception($e->getMessage() . ' /*@' . $this->link->host_info . '*/', $e->getCode(), $e);
+            $e->appendMessage('/* ' . $this->dbName() . ' */');
+            throw $e;
         }
         return $res;
     }

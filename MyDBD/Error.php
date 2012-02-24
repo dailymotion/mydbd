@@ -79,7 +79,13 @@ class SQLException extends Exception
         $this->code = $code;
         $this->sqlstate = $sqlstate;
     }
+
+    public function appendMessage ($m)
+    {
+        $this->message .= " $m";
+    }
 }
+
 class SQLUnknownException extends SQLException {}
 class SQLSyntaxException extends SQLException {}
 class SQLConstraintException extends SQLException {}
