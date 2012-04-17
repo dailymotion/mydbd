@@ -158,7 +158,8 @@ class MyDBD
      *                        words (bool)
      * - readonly:            The connection will be considerated readonly, all attempts to perform
      *                        a write query (INSERT, DELETE...) will throw an exception. (bool)
-     * - query_log:           If query_log is on, all queries will be logged using MyDBD_Logger. (bool)
+     * - query_log:           If query_log is on, all queries will be logged using MyDBD_Logger. You
+     *                        may provide an instance to a MyDBD_Logger compatible logger.
      * - query_prepare_cache: Make the query() method to use prepareCached() instead of prepare()
      *                        when needed.
      * - client_interactive:  Allow interactive_timeout seconds (instead of wait_timeout seconds)
@@ -221,6 +222,7 @@ class MyDBD
         if ($this->options['ignore_space'])       $this->connectionInfo['flags'] |= MYSQLI_CLIENT_IGNORE_SPACE;
         if ($this->options['client_interactive']) $this->connectionInfo['flags'] |= MYSQLI_CLIENT_INTERACTIVE;
         if ($this->options['connect_timeout'])    $this->link->options(MYSQLI_OPT_CONNECT_TIMEOUT, $options['connect_timeout']);
+        if ($this->options['query_log'] === true) $this->options['query_log'] = MyDBD_Logger::getDefaultInstance();
     }
 
     public function __destruct()
@@ -371,7 +373,7 @@ class MyDBD
                 $result = new MyDBD_ResultSet($result, $this->options);
             }
 
-            if ($this->options['query_log']) MyDBD_Logger::log('query', $query, null, microtime(true) - $start);
+            if ($this->options['query_log']) $this->options['query_log']->log('query', $query, null, microtime(true) - $start);
         }
 
         return $result;
