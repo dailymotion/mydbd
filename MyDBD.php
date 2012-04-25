@@ -378,7 +378,7 @@ class MyDBD
                 $result = new MyDBD_ResultSet($result, $this->options);
             }
 
-            if ($this->options['query_log']) $this->options['query_log']->log('query', $query, null, microtime(true) - $start);
+            if ($this->options['query_log']) $this->options['query_log']->log('query', $query, null, (microtime(true) - $start) * 1000);
         }
 
         return $result;

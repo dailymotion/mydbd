@@ -105,7 +105,7 @@ class MyDBD_PreparedStatement
 
         if ($this->stmt->prepare($query))
         {
-            if ($this->options['query_log']) $this->options['query_log']->log('prepare', $query, null, microtime(true) - $start);
+            if ($this->options['query_log']) $this->options['query_log']->log('prepare', $query, null, (microtime(true) - $start) * 1000);
             if ($this->options['enable_pinba']) $timer = pinba_timer_stop($pinbaTimer);
             $this->preparedQuery = $query;
 
@@ -194,7 +194,7 @@ class MyDBD_PreparedStatement
         if ($this->options['enable_pinba']) $timer = pinba_timer_stop($pinbaTimer);
         $this->handleErrors($this->preparedQuery, $params);
 
-        if ($this->options['query_log']) $this->options['query_log']->log('execute', $this->preparedQuery, (isset($params) ? $params : null), microtime(true) - $start);
+        if ($this->options['query_log']) $this->options['query_log']->log('execute', $this->preparedQuery, (isset($params) ? $params : null), (microtime(true) - $start) * 1000);
 
 
         if ($metadata = $this->stmt->result_metadata())
