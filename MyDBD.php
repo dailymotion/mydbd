@@ -116,6 +116,7 @@ class MyDBD
         $connectionInfo         = null,
         $statementCache         = array(),
         $lastQueryHandle        = null,
+        $lastQuery              = null,
         $extendedConnectionInfo = array(),
         $extendedQueryInfo      = array(),
         $replicationDelay       = -1,
@@ -229,7 +230,8 @@ class MyDBD
     {
         if ($this->transactionInProgress)
         {
-            error_log('A transaction has been left uncommited, rolling it back...');
+            $query = $this->lastQuery ? $this->lastQuery : '/* no query seen */';
+            error_log("Rollback uncommitted transaction, last query was $query");
             $this->rollback();
         }
     }
@@ -343,6 +345,7 @@ class MyDBD
     {
         $params = func_get_args();
         $query = array_shift($params);
+        $this->lastQuery = $query;
 
         // backward compat, support params given as array
         if (count($params) == 1 && is_array($params[0]))
@@ -416,6 +419,7 @@ class MyDBD
     {
         $args = func_get_args();
         $query = array_shift($args);
+        $this->lastQuery = "/* prepared */ $query";
 
         $stmt = $this->link()->stmt_init();
         $this->lastQueryHandle = $stmt; // used by affectedRows()
@@ -495,6 +499,7 @@ class MyDBD
 
         $this->transactionInProgress = true;
         $this->link()->autocommit(false);
+        $this->lastQuery = null;
     }
 
     /**
