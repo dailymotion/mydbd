@@ -258,9 +258,17 @@ class MyDBD
 
         if (!$success)
         {
-            $error = mysqli_connect_error();
-            $errorno = mysqli_connect_errno();
-            throw new SQLConnectFailedException($error, $errorno);
+            throw new SQLConnectFailedException
+            (
+                sprintf (
+                    '%s [%s@%s::%s]',
+                    mysqli_connect_error(),
+                    $this->connectionInfo['username'],
+                    $this->connectionInfo['hostname'],
+                    $this->connectionInfo['database']
+                ),
+                mysqli_connect_errno()
+            );
         }
 
         if ($this->options['wait_timeout'])
