@@ -42,6 +42,11 @@ abstract class MyDBD_Error
             1452 => 'SQLConstraintException',
             1066 => 'SQLNotUniqueTableAliasException',
             2030 => 'SQLNotPreparedStatementException',
+            1227 => 'SQLPrivilegeException',
+            1213 => 'SQLDeadlockException',
+            2006 => 'SQLLostConnectionException',
+            2013 => 'SQLGenocideException',
+            2014 => 'SQLSyncException',
         );
 
     static public function throwError($errorno, $error, $sqlstate = null, $query = null, array $params = null)
@@ -86,6 +91,7 @@ class SQLException extends Exception
     }
 }
 
+class SQLSyncException extends SQLException {}
 class SQLUnknownException extends SQLException {}
 class SQLSyntaxException extends SQLException {}
 class SQLConstraintException extends SQLException {}
@@ -117,4 +123,9 @@ class SQLReadOnlyException extends SQLException {}
 class SQLNotConnectedException extends SQLException {}
 class SQLNotPreparedStatementException extends SQLException {}
 class SQLNotUniqueTableAliasException extends SQLException {}
+class SQLPrivilegeException extends SQLException {}
+class SQLDeadlockException extends SQLException {}
+class SQLLostConnectionException extends SQLException {}
+class SQLGenocideException extends SQLException {}
+
 /**#@-*/
