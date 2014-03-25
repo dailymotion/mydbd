@@ -186,53 +186,6 @@ class MyDBD_ResultSet implements SeekableIterator, Countable
         return $this->cursor >= 0 && $this->cursor < $this->result->num_rows;
     }
 
-    /**
-     * Returns an array containing all of the result set rows.    The array format will depend on
-     * the default fetch mode. You can change default fetch mode by calling setFetchMode() before
-     * this method.
-     *
-     * <code>
-     * $result = $dbh->query('SELECT * FROM table')
-     *     ->setFetchMode(MyDBD_Result::FETCH_ASSOC)
-     *     ->fetchAll();
-     *
-     * print_r($result);
-     * </code>
-     * <pre>
-     * Array
-     * (
-     *     [0] => Array
-     *         (
-     *             [column1] => 'value_row1_column1'
-     *             [column2] => 123
-     *         )
-     *     [1] => Array
-     *     ...
-     * )
-     * </pre>
-     *
-     * <code>
-     * $result = $dbh->query('SELECT * FROM table')
-     *     ->setFetchMode(MyDBD_Result::FETCH_COLUMN)
-     *     ->fetchAll();
-     *
-     * print_r($result);
-     * </code>
-     * <pre>
-     * Array
-     * (
-     *     [0] => 'value_row1_column1'
-     *     [1] => 'value_row2_column1'
-     *     ...
-     * )
-     * </pre>
-     *
-     * @see setFetchMode()
-     */
-    public function fetchAll()
-    {
-        return iterator_to_array($this);
-    }
 
     /**
      * Fetches the next row and returns it as a simple array.
