@@ -369,6 +369,8 @@ class MyDBD
         }
 
         if ($this->options['query_log']) $start = microtime(true);
+
+        // start pinba timer
         if ($this->options['enable_pinba']) $pinbaTimer = pinba_timer_start(array('group' => 'db', 'method' => 'query'));
 
         if (count($params) > 0)
@@ -380,7 +382,6 @@ class MyDBD
         {
             $link = $this->link();
             $result = $link->query($query);
-            if ($this->options['enable_pinba']) $timer = pinba_timer_stop($pinbaTimer);
             $this->handleErrors($query);
             $this->lastQueryHandle = $link; // used by getAffectedRows()
 
@@ -391,6 +392,9 @@ class MyDBD
 
             if ($this->options['query_log']) $this->options['query_log']->log('query', $query, null, (microtime(true) - $start) * 1000);
         }
+
+        // stop pinba timer
+        if ($this->options['enable_pinba']) $timer = pinba_timer_stop($pinbaTimer);
 
         return $result;
     }
