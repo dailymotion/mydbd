@@ -101,12 +101,10 @@ class MyDBD_PreparedStatement
         }
 
         if ($this->options['query_log']) $start = microtime(true);
-        if ($this->options['enable_pinba']) $pinbaTimer = pinba_timer_start(array('group' => 'db', 'method' => 'prepare'));
 
         if ($this->stmt->prepare($query))
         {
             if ($this->options['query_log']) $this->options['query_log']->log('prepare', $query, null, (microtime(true) - $start) * 1000);
-            if ($this->options['enable_pinba']) $timer = pinba_timer_stop($pinbaTimer);
             $this->preparedQuery = $query;
 
             if (count($args) > 0)
@@ -131,12 +129,16 @@ class MyDBD_PreparedStatement
         }
         else
         {
-            if ($this->options['enable_pinba']) $timer = pinba_timer_stop($pinbaTimer);
             $this->handleErrors($query);
 
             // if handle errors doesn't throw an exception, do it by ourself
             throw new SQLUnknownException('Cannot prepare statement: ' . $query);
         }
+    }
+
+    private function getQueryType($query)
+    {
+        return strtolower(explode(' ', $query)[0]);
     }
 
     /**
@@ -174,7 +176,11 @@ class MyDBD_PreparedStatement
         }
 
         if ($this->options['query_log']) $start = microtime(true);
-        if ($this->options['enable_pinba']) $pinbaTimer = pinba_timer_start(array('group' => 'db', 'method' => 'execute'));
+        if ($this->options['enable_pinba'])
+        {
+            $method = $this->getQueryType($this->preparedQuery);
+            $pinbaTimer = pinba_timer_start(array('group' => 'db', 'method' => $method));
+        }
 
         if ($this->stmt->param_count > 0)
         {
@@ -190,6 +196,7 @@ class MyDBD_PreparedStatement
         }
 
         $this->stmt->execute();
+
         $this->stmt->store_result();
         if ($this->options['enable_pinba']) $timer = pinba_timer_stop($pinbaTimer);
         $this->handleErrors($this->preparedQuery, $params);

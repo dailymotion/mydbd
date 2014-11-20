@@ -371,7 +371,11 @@ class MyDBD
         if ($this->options['query_log']) $start = microtime(true);
 
         // start pinba timer
-        if ($this->options['enable_pinba']) $pinbaTimer = pinba_timer_start(array('group' => 'db', 'method' => 'query'));
+        if ($this->options['enable_pinba'])
+        {
+            $method = strtolower(explode(' ', $query)[0]);
+            $pinbaTimer = pinba_timer_start(array('group' => 'db', 'method' => $method));
+        }
 
         if (count($params) > 0)
         {
