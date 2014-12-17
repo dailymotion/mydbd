@@ -138,7 +138,8 @@ class MyDBD_PreparedStatement
 
     private function getQueryType($query)
     {
-        return strtolower(explode(' ', $query)[0]);
+        $toRemove = array('(', ')');
+        return str_replace($toRemove, '', trim(strtolower(explode(' ', $query)[0])));
     }
 
     /**

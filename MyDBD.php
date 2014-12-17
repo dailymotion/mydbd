@@ -373,7 +373,8 @@ class MyDBD
         // start pinba timer
         if ($this->options['enable_pinba'])
         {
-            $method = strtolower(explode(' ', $query)[0]);
+            $toRemove = array('(', ')');
+            $method = str_replace($toRemove, '', trim(strtolower(explode(' ', $query)[0])));
             $pinbaTimer = pinba_timer_start(array('group' => 'db', 'method' => $method));
         }
 
