@@ -49,8 +49,10 @@ abstract class MyDBD_Error
             2030 => 'SQLNotPreparedStatementException',
         );
 
-    static public function throwError($errorno, $error, $sqlstate = null, $query = null, array $params = null)
+    static public function throwError($hostname, $errorno, $error, $sqlstate = null, $query = null, array $params = null)
     {
+        $error .= ' on hostname: ' . $hostname;
+
         if (isset($query))
         {
             $error .= ' for query: ' . $query;

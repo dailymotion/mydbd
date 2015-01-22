@@ -319,7 +319,7 @@ class MyDBD
     {
         if ($this->link->errno)
         {
-            MyDBD_Error::throwError($this->link->errno, $this->link->error . ' /* ' . $this->dbName() . ' */', $this->link->sqlstate, $query);
+            MyDBD_Error::throwError($this->connectionInfo['hostname'], $this->link->errno, $this->link->error . ' /* ' . $this->dbName() . ' */', $this->link->sqlstate, $query);
         }
     }
 
@@ -442,7 +442,7 @@ class MyDBD
         $this->lastQueryHandle = $stmt; // used by affectedRows()
         $this->handleErrors();
 
-        $sth = new MyDBD_PreparedStatement($stmt, $this->options);
+        $sth = new MyDBD_PreparedStatement($stmt, $this->options, $this->connectionInfo);
         try
         {
             $sth->prepare($query, $args);
