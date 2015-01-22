@@ -13,6 +13,7 @@ class MyDBD_PreparedStatement
     private
         $stmt           = null,
         $options        = null,
+        $connectionInfo = null,
         $frozen         = false,
         $preparedQuery  = null,
         $resultSet      = null,
@@ -23,10 +24,11 @@ class MyDBD_PreparedStatement
      *
      * @param mysqli_stmt $preparedStatement
      */
-    public function __construct(mysqli_stmt $preparedStatement, array $options)
+    public function __construct(mysqli_stmt $preparedStatement, array $options, array $connectionInfo)
     {
-        $this->stmt    = $preparedStatement;
-        $this->options = $options;
+        $this->stmt           = $preparedStatement;
+        $this->options        = $options;
+        $this->connectionInfo = $connectionInfo;
     }
 
     /**
@@ -323,7 +325,7 @@ class MyDBD_PreparedStatement
     {
         if ($this->stmt->errno)
         {
-            MyDBD_Error::throwError($this->stmt->errno, $this->stmt->error, null, $query, $params);
+            MyDBD_Error::throwError($this->connectionInfo['hostname'], $this->stmt->errno, $this->stmt->error, null, $query, $params);
         }
     }
 }
