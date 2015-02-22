@@ -94,7 +94,7 @@ class MyDBD_Logger
         if ($sortByDuration)
         {
             $sortedLogs = $this->logs;
-            usort($sortedLogs, create_function('$a, $b', 'return $a["duration"] == $b["duration"] ? 0 : $a["duration"] < $b["duration"] ? 1 : -1;'));
+            usort($sortedLogs, function($a, $b) { return (($a["duration"] == $b["duration"]) ? 0 : (($a["duration"] < $b["duration"]) ? 1 : -1)); });
             return $sortedLogs;
         }
         else

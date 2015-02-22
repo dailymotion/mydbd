@@ -130,7 +130,7 @@ class MyDBD
     {
         $base = dirname(__FILE__);
         require_once $base . '/MyDBD/Error.php';
-        spl_autoload_register(create_function('$class', 'require "' . $base . '/" . str_replace("_", "/", $class) . ".php";'));
+        spl_autoload_register(function($class) use($base) { require "' . $base . '/" . str_replace("_", "/", $class) . ".php"; });
     }
 
     /**
