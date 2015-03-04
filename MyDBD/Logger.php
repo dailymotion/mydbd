@@ -71,7 +71,7 @@ class MyDBD_Logger
 
         if (isset($params))
         {
-            $query = preg_replace('/\?/e', 'is_string($v = array_shift($params)) ? "\'". $v ."\'" : $v', $query);
+            $query = preg_replace('/\?/', function($matches) use($params) { return is_string($v = array_shift($params)) ? "'". $v ."'" : $v; }, $query);
         }
 
         $this->logs[] = array('command' => $command, 'query' => $query, 'duration' => $duration, 'callpath' => $callPath);
