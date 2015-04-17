@@ -208,7 +208,7 @@ class MyDBD
                 'ignore_space'          => false,
                 'readonly'              => false,
                 'query_log'             => false,
-                'enable_pinba'          => function_exists('pinba_timer_start'),
+                'enable_pinba'          => 'cli' !== php_sapi_name() && function_exists('pinba_timer_start'),
                 'query_prepare_cache'   => false,
                 'connect_timeout'       => 0,
                 'wait_timeout'          => 0,
