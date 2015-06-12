@@ -106,15 +106,6 @@ class MyDBD_PreparedStatement
 
         if ($this->stmt->prepare($query))
         {
-            if ($this->options['query_log'])
-            {
-                $this->options['query_log']->log(
-                    'prepare',
-                    $query,
-                    null,
-                    (microtime(true) - $start) * 1000
-                );
-            }
             $this->preparedQuery = $query;
 
             if (count($args) > 0)
