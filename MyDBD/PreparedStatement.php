@@ -137,10 +137,19 @@ class MyDBD_PreparedStatement
         }
     }
 
-    private function getQueryType($query)
+    private function getPinbaTags($query)
     {
         $toRemove = array('(', ')');
-        return str_replace($toRemove, '', trim(strtolower(explode(' ', $query)[0])));
+        $queryArray = explode(' ', $query);
+        $method = str_replace($toRemove, '', trim(strtolower($queryArray[0])));
+        $index = array_search('FROM', $queryArray);
+        $tableName = $queryArray[$index + 1];
+
+        return [
+            'mysql' => $this->connectionInfo['database'] . '.' . $tableName,
+            'group' => 'mysql',
+            'method' => $method
+        ];
     }
 
     /**
@@ -180,8 +189,8 @@ class MyDBD_PreparedStatement
         if ($this->options['query_log']) $start = microtime(true);
         if ($this->options['enable_pinba'])
         {
-            $method = $this->getQueryType($this->preparedQuery);
-            $pinbaTimer = pinba_timer_start(array('group' => 'db', 'method' => $method));
+            $tags = $this->getPinbaTags($this->preparedQuery);
+            $pinbaTimer = pinba_timer_start($tags);
         }
 
         if ($this->stmt->param_count > 0)
