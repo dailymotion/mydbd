@@ -374,8 +374,17 @@ class MyDBD
         if ($this->options['enable_pinba'])
         {
             $toRemove = array('(', ')');
-            $method = str_replace($toRemove, '', trim(strtolower(explode(' ', $query)[0])));
-            $pinbaTimer = pinba_timer_start(array('group' => 'db', 'method' => $method));
+            $queryArray = explode(' ', $query);
+            $method = str_replace($toRemove, '', trim(strtolower($queryArray[0])));
+            $index = array_search('FROM', $queryArray);
+            $tableName = $queryArray[$index + 1];
+            $tags = [
+                'mysql' => $this->connectionInfo['database'] . '.' . $tableName,
+                'group' => 'mysql',
+                'method' => $method
+            ];
+
+            $pinbaTimer = pinba_timer_start($tags);
         }
 
         if (count($params) > 0)
