@@ -143,7 +143,7 @@ class MyDBD_PreparedStatement
         $queryArray = explode(' ', $query);
         $method = str_replace($toRemove, '', trim(strtolower($queryArray[0])));
         $index = array_search('FROM', $queryArray);
-        $tableName = $queryArray[$index + 1];
+        $tableName = str_replace('`', '', $queryArray[$index + 1]);
 
         return [
             'mysql' => $this->connectionInfo['database'] . '.' . $tableName,

@@ -377,7 +377,7 @@ class MyDBD
             $queryArray = explode(' ', $query);
             $method = str_replace($toRemove, '', trim(strtolower($queryArray[0])));
             $index = array_search('FROM', $queryArray);
-            $tableName = $queryArray[$index + 1];
+            $tableName = str_replace('`', '', $queryArray[$index + 1]);
             $tags = [
                 'mysql' => $this->connectionInfo['database'] . '.' . $tableName,
                 'group' => 'mysql',
