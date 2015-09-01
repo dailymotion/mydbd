@@ -137,21 +137,6 @@ class MyDBD_PreparedStatement
         }
     }
 
-    private function getPinbaTags($query)
-    {
-        $toRemove = array('(', ')');
-        $queryArray = explode(' ', $query);
-        $method = str_replace($toRemove, '', trim(strtolower($queryArray[0])));
-        $index = array_search('FROM', $queryArray);
-        $tableName = str_replace('`', '', $queryArray[$index + 1]);
-
-        return [
-            'mysql' => $this->connectionInfo['database'] . '.' . $tableName,
-            'group' => 'mysql',
-            'method' => $method
-        ];
-    }
-
     /**
      * Executes a query previously prepared using the prepare() method.
      * When executed any parameter markers which exist will automatically be replaced with the
@@ -189,8 +174,8 @@ class MyDBD_PreparedStatement
         if ($this->options['query_log']) $start = microtime(true);
         if ($this->options['enable_pinba'])
         {
-            $tags = $this->getPinbaTags($this->preparedQuery);
-            $pinbaTimer = pinba_timer_start($tags);
+            $d = new MyDBD(['database' => $this->connectionInfo['database']]);
+            $pinbaTimer = pinba_timer_start($d->extractPinbaTags($this->preparedQuery));
         }
 
         if ($this->stmt->param_count > 0)

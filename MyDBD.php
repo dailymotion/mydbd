@@ -373,18 +373,8 @@ class MyDBD
         // start pinba timer
         if ($this->options['enable_pinba'])
         {
-            $toRemove = array('(', ')');
-            $queryArray = explode(' ', $query);
-            $method = str_replace($toRemove, '', trim(strtolower($queryArray[0])));
-            $index = array_search('FROM', $queryArray);
-            $tableName = str_replace('`', '', $queryArray[$index + 1]);
-            $tags = [
-                'mysql' => $this->connectionInfo['database'] . '.' . $tableName,
-                'group' => 'mysql',
-                'method' => $method
-            ];
-
-            $pinbaTimer = pinba_timer_start($tags);
+            error_log("start pinba $query");
+            $pinbaTimer = pinba_timer_start($this->extractPinbaTags($query));
         }
 
         if (count($params) > 0)
@@ -408,7 +398,10 @@ class MyDBD
         }
 
         // stop pinba timer
-        if ($this->options['enable_pinba']) $timer = pinba_timer_stop($pinbaTimer);
+        if ($this->options['enable_pinba'])
+        {
+            pinba_timer_stop($pinbaTimer);
+        }
 
         return $result;
     }
@@ -1072,6 +1065,42 @@ class MyDBD
         }
 
         return $results;
+    }
+
+    public function extractPinbaTags($sql)
+    {
+        $sql = preg_replace('/\/\*.*?\*\//', '', str_replace('`', '', strtolower($sql))); // force lowercase, remove comments and backticks
+        $tableRE = '(\S+(?:\.\S+)?)'; // video, schema.video
+        $patterns = [
+            ['select', "select\s+(?:.*?)\s+from\s+$tableRE"],
+            ['insert', "insert\s+(?:delayed\s+)?(?:ignore\s+)?(?:into\s+)?$tableRE"],
+            ['update', "update\s+$tableRE"],
+            ['replace', "replace\s+(?:into\s+)?$tableRE"],
+            ['delete', "delete\s+from\s+$tableRE"],
+            ['set', "set\s+(\S+)"],
+            ['show', "show\s+(\S+(\s+\S+)?)"],
+            ['select', "select\s+(@\S+)"],
+        ];
+
+        foreach ($patterns as $p)
+        {
+            if (preg_match("/^\s*$p[1]/", $sql, $match))
+            {
+                return
+                [
+                    'group' => 'mysql',
+                    'mysql' => $this->connectionInfo['database'] . '.' . $match[1],
+                    'method' => $p[0],
+                ];
+            }
+        }
+
+        error_log($query);
+        return [
+            'group' => 'mysql',
+            'mysql' => $this->connectionInfo['database'] . substr($query, 0, 64),
+            'method' => '?',
+        ];
     }
 
     /**#@-*/
