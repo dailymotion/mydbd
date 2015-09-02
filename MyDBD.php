@@ -373,7 +373,6 @@ class MyDBD
         // start pinba timer
         if ($this->options['enable_pinba'])
         {
-            error_log("start pinba $query");
             $pinbaTimer = pinba_timer_start($this->extractPinbaTags($query));
         }
 
@@ -1095,7 +1094,6 @@ class MyDBD
             }
         }
 
-        error_log($query);
         return [
             'group' => 'mysql',
             'mysql' => $this->connectionInfo['database'] . substr($query, 0, 64),
