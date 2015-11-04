@@ -222,7 +222,7 @@ class MyDBD
         if ($this->options['found_rows'])         $this->connectionInfo['flags'] |= MYSQLI_CLIENT_FOUND_ROWS;
         if ($this->options['ignore_space'])       $this->connectionInfo['flags'] |= MYSQLI_CLIENT_IGNORE_SPACE;
         if ($this->options['client_interactive']) $this->connectionInfo['flags'] |= MYSQLI_CLIENT_INTERACTIVE;
-        if ($this->options['connect_timeout'])    $this->link->options(MYSQLI_OPT_CONNECT_TIMEOUT, $options['connect_timeout']);
+        if ($this->options['connect_timeout'])    $this->link->options(MYSQLI_OPT_CONNECT_TIMEOUT, $this->options['connect_timeout']);
         if ($this->options['query_log'] === true) $this->options['query_log'] = MyDBD_Logger::getDefaultInstance();
     }
 
@@ -245,6 +245,9 @@ class MyDBD
      */
     public function connect()
     {
+        $this->link = mysqli_init();
+        if ($this->options['connect_timeout']) $this->link->options(MYSQLI_OPT_CONNECT_TIMEOUT, $this->options['connect_timeout']);
+
         $success = @$this->link->real_connect
         (
             $this->connectionInfo['hostname'],
@@ -295,7 +298,7 @@ class MyDBD
      */
     protected function link($autoconnect = true)
     {
-        if (!$this->connected || !@$this->link->ping())
+        if (!$this->connected || ($autoconnect && !@$this->link->ping()))
         {
             if ($autoconnect)
             {

@@ -193,9 +193,13 @@ class MyDBD_PreparedStatement
 
         $this->stmt->execute();
 
-        $this->stmt->store_result();
         if ($this->options['enable_pinba']) $timer = pinba_timer_stop($pinbaTimer);
         $this->handleErrors($this->preparedQuery, $params);
+
+        if ($this->stmt->field_count > 0)
+        {
+            $this->stmt->store_result();
+        }
 
         if ($this->options['query_log'])
         {

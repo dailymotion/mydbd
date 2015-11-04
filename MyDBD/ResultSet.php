@@ -158,6 +158,11 @@ class MyDBD_ResultSet implements SeekableIterator, Countable
      */
     public function seek($position)
     {
+        if ($this->result->num_rows == 0)
+        {
+            return;
+        }
+
         if ($position < 0 && $position > $this->result->num_rows - 1)
         {
             throw new OutOfBoundsException('Invalid seek position: ' . $position);
