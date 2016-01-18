@@ -185,8 +185,7 @@ class MyDBD
 
         $this->connectionInfo = array_merge
         (
-            array
-            (
+            [
                 'username'              => null,
                 'password'              => null,
                 'hostname'              => null,
@@ -194,14 +193,13 @@ class MyDBD
                 'port'                  => null,
                 'socket'                => null,
                 'flags'                 => null,
-            ),
+            ],
             $connectionInfo
         );
 
         $this->options = array_merge
         (
-            array
-            (
+            [
                 'compression'           => false,
                 'ssl'                   => false,
                 'found_rows'            => false,
@@ -211,9 +209,9 @@ class MyDBD
                 'enable_pinba'          => 'cli' !== php_sapi_name() && function_exists('pinba_timer_start'),
                 'query_prepare_cache'   => false,
                 'connect_timeout'       => 0,
-                'wait_timeout'          => 0,
-                'client_interactive'    => false,
-            ),
+                'wait_timeout'          => (PHP_SAPI === 'cli' ? 7200 : 30),
+                'client_interactive'    => (PHP_SAPI === 'cli'),
+            ],
             $options
         );
 
