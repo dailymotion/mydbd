@@ -1089,6 +1089,7 @@ class MyDBD
                 return
                 [
                     'group' => 'mysql',
+                    'io' => 'mysql',
                     'mysql' => $this->connectionInfo['database'] . '.' . $match[1],
                     'method' => $p[0],
                 ];
@@ -1097,6 +1098,7 @@ class MyDBD
 
         return [
             'group' => 'mysql',
+            'io' => 'mysql',
             'mysql' => $this->connectionInfo['database'] . substr($sql, 0, 64),
             'method' => '?',
         ];
